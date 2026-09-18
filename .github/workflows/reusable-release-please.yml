@@ -50,12 +50,12 @@ jobs:
     steps:
       - name: Generate bot token
         id: app-token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1
         with:
           app-id: ${{ vars.PRD_RELEASE_PLEASE_APP_ID }}
           private-key: ${{ secrets.PRD_RELEASE_PLEASE_APP_PRIVATE_KEY }}
 
-      - uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@8b8fd2cc23b2e18957157a9d923d75aa0c6f6ad5 # v4
         id: release-please
         with:
           token: ${{ steps.app-token.outputs.token }}

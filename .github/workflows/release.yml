@@ -39,12 +39,12 @@ jobs:
       # PRD_RELEASE_PLEASE_APP_PRIVATE_KEY org secret.
       - name: Generate bot token
         id: app-token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1
         with:
           app-id: ${{ vars.PRD_RELEASE_PLEASE_APP_ID }}
           private-key: ${{ secrets.PRD_RELEASE_PLEASE_APP_PRIVATE_KEY }}
 
-      - uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@8b8fd2cc23b2e18957157a9d923d75aa0c6f6ad5 # v4
         id: release
         with:
           config-file: release-please-config.json
@@ -61,16 +61,16 @@ jobs:
       # first published outside the workflow.
       - name: Generate bot token
         id: app-token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1
         with:
           app-id: ${{ vars.PRD_RELEASE_PLEASE_APP_ID }}
           private-key: ${{ secrets.PRD_RELEASE_PLEASE_APP_PRIVATE_KEY }}
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "20"
           cache: "pnpm"
@@ -85,12 +85,13 @@ jobs:
       - name: resolve packages to publish
         id: targets
         env:
+          EVENT_NAME: ${{ github.event_name }}
           PATHS_RELEASED: ${{ needs.release-please.outputs.paths_released }}
           INPUT_PATHS: ${{ inputs.paths }}
         run: |
           # A release supplies its own path list; a manual dispatch names them, or defaults to every
           # configured package (the version each publishes is whatever is committed at this ref).
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             if [ -n "$INPUT_PATHS" ]; then
               paths="$INPUT_PATHS"
             else
@@ -118,7 +119,7 @@ jobs:
           done
 
       - name: attest build provenance
-        uses: actions/attest-build-provenance@v1
+        uses: actions/attest-build-provenance@92c65d2898f1f53cfdc910b962cecff86e7f8fcc # v1
         with:
           subject-path: "${{ github.workspace }}/.artifacts/*.tgz"
 

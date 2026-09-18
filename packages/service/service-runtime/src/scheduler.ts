@@ -21,8 +21,9 @@ export interface TickLoopOptions {
 	tick: () => Promise<void>;
 	/**
 	 * Called if `tick` rejects. Use it to record health/log; the loop itself
-	 * swallows the rejection and keeps scheduling. If omitted, a rejected tick
-	 * is silently absorbed (so an unobserved throw can't crash the process).
+	 * swallows the rejection and keeps scheduling. If omitted, the failure is
+	 * surfaced with `console.error` so a permanently failing tick stays visible
+	 * to operators instead of being silently absorbed.
 	 */
 	onError?: (error: unknown) => void;
 }
@@ -43,7 +44,13 @@ export function createTickLoop(options: TickLoopOptions): TickLoop {
 		try {
 			await tick();
 		} catch (error) {
-			onError?.(error);
+			if (onError) {
+				onError(error);
+			} else {
+				// No handler configured: surface the failure instead of silently
+				// swallowing it, so a permanently failing worker is not invisible.
+				console.error("Scheduled tick failed (no onError handler configured):", error);
+			}
 		}
 	};
 
